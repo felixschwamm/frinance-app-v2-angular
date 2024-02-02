@@ -1,0 +1,3 @@
+<div class="d-flex rounded-2 border-light border overflow-hidden" style="height: 30px;">
+    <div *ngFor="let barWidth of widthsPerCategoryKeyValues$ | async" [ngStyle]="{'width': barWidth[1] + '%', 'background-color': '#' + utilsService.getCategoryColor(barWidth[0])}"></div>
+</div>

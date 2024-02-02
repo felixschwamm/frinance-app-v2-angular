@@ -1,0 +1,1 @@
+<button class="btn border rounded me-1" *ngFor="let item of items; index as i" [ngClass]="{'btn-primary border-primary': selected === i}" (click)="change(i)">{{ item }}</button>

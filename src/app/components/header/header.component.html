@@ -1,0 +1,12 @@
+<div class="d-flex justify-content-between align-items-center my-3">
+    <div>
+        <span style="font-size: 36px; font-weight: 600; margin-bottom: -8px;" class="d-block">
+            <ng-container *ngIf="(remainingBudgetFormatted$ | async) as remainingBudget; else loading">
+                {{ remainingBudget }}
+            </ng-container>
+            <ng-template #loading>Laden...</ng-template>
+        </span>
+        <span class="text-muted" style="font-size: 14px;">übrig für {{utilsService.getMonthName(currentMonth)}}</span>
+    </div>
+    <div style="height: 45px; width: 45px; background-color: black; border-radius: 45px;"></div>
+</div>

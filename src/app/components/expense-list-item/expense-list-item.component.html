@@ -1,0 +1,19 @@
+<div class="w-100 mb-1 border border-light rounded" style="padding: 12px 0;">
+    <div class="d-flex align-items-center" (click)="menuOpenend = true">
+        <div [style]="{'background-color': '#' + utilsService.getCategoryColor(expense.category)}"
+            style="margin-left: -1px; height: 28px; width: 8px; background-color: black; border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+        </div>
+        <div class="px-2">
+            <span style="font-size: 16px; margin-bottom: -4px;" class="d-block">{{expense.name}}</span>
+            <span class="text-muted" style="font-size: 14px;">{{utilsService.getReadableDate(expense.date)}}</span>
+        </div>
+        <div class="flex-grow-1"></div>
+        <div class="flex-shrink-0">
+            <span class="px-3">{{utilsService.formatCurrency(expense.amount)}}</span>
+        </div>
+    </div>
+    <div class="d-flex justify-content-between px-3 mt-2" *ngIf="menuOpenend">
+        <button class="btn btn-sm border border-light rounded" (click)="menuOpenend = false">Abbrechen</button>
+        <button class="btn btn-sm btn-danger rounded" (click)="deleteExpense()">Löschen</button>
+    </div>
+</div>
