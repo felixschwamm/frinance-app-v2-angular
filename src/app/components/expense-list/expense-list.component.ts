@@ -4,7 +4,7 @@ import { ExpenseListItemComponent } from "../expense-list-item/expense-list-item
 import { CommonModule } from '@angular/common';
 import { BackendService } from '../../services/backend.service';
 import { SelectComponent } from "../select/select.component";
-import { BehaviorSubject, Observable, Subject, combineLatest, map, of } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, combineLatest, debounceTime, map, of } from 'rxjs';
 import { MonthSelectComponent } from "../month-select/month-select.component";
 
 @Component({
@@ -14,7 +14,7 @@ import { MonthSelectComponent } from "../month-select/month-select.component";
     styleUrl: './expense-list.component.scss',
     imports: [ExpenseListItemComponent, CommonModule, SelectComponent, MonthSelectComponent]
 })
-export class ExpenseListComponent {
+export class ExpenseListComponent implements OnInit {
 
   constructor(
     private backendService: BackendService
@@ -22,13 +22,21 @@ export class ExpenseListComponent {
 
   selectedSorting$ = new BehaviorSubject<number>(0);
   selectedMonth$: BehaviorSubject<{ year: number, month: number }> = new BehaviorSubject({ year: new Date().getFullYear(), month: new Date().getMonth() + 1 });
+  selectedMonthDebounced$ = this.selectedMonth$.pipe(
+    debounceTime(300)
+  );
+
+  ngOnInit(): void {
+      this.selectedMonthDebounced$.subscribe(selectedMonth => {
+        this.backendService.updateExpensesForMonth(selectedMonth.year, selectedMonth.month);
+      });
+  }
 
   onSelectedMonthChange(selectedMonth: { year: number, month: number }): void {
     this.selectedMonth$.next(selectedMonth);
-    this.backendService.updateExpensesForMonth(selectedMonth.year, selectedMonth.month);
   }
 
-  expenses$: Observable<null | Expense[]> = combineLatest([this.backendService.expensesForMonth$, this.selectedSorting$, this.selectedMonth$]).pipe(
+  expenses$: Observable<null | Expense[]> = combineLatest([this.backendService.expensesForMonth$, this.selectedSorting$, this.selectedMonthDebounced$]).pipe(
     map(([expensesForMonth, selectedSorting, selectedMonth]) => {
       const key = `${selectedMonth.year}-${selectedMonth.month}`;
       const expenses =  expensesForMonth[key] || null;
