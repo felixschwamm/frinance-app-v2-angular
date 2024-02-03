@@ -27,6 +27,27 @@ export class ExpenseListItemComponent implements AfterViewInit {
   isAnimatingBack = false;
   deleteActive = false;
   editActive = false;
+  resetPositionTimeout: any;
+
+  setResetPositionTimeout(): void {
+    clearTimeout(this.resetPositionTimeout);
+    this.resetPositionTimeout = setTimeout(() => {
+      if (this.transformX > 50) {
+        return;
+      }
+      this.isAnimatingBack = false;
+      this.myElement.nativeElement.style.transition = "";
+      this.deleteDiv.nativeElement.style.transition = "";
+      this.editDiv.nativeElement.style.transition = "";
+      this.deleteIcon.nativeElement.style.transition = "";
+      this.editIcon.nativeElement.style.transition = "";
+      this.transformX = 0;
+      this.deleteActive = false;
+      this.editActive = false;
+      this.deleteIcon.nativeElement.style.opacity = "0";
+      this.editIcon.nativeElement.style.opacity = "0";
+    }, 500);
+  }
 
   ngAfterViewInit(): void {
     import('hammerjs').then(({ default: Hammer }) => {
@@ -49,6 +70,7 @@ export class ExpenseListItemComponent implements AfterViewInit {
           lastPosX = 0;
           this.isAnimatingBack = false;
         }
+        this.setResetPositionTimeout();
       });
 
       hammer.on("panmove", (ev) => {
@@ -86,6 +108,8 @@ export class ExpenseListItemComponent implements AfterViewInit {
           this.editActive = false;
           this.editIcon.nativeElement.style.fontSize = "16px";
         }
+
+        this.setResetPositionTimeout();
       });
 
       hammer.on("panend", async () => {
