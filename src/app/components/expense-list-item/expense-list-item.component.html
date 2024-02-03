@@ -13,7 +13,7 @@
             </div>
             <div class="px-2">
                 <span style="font-size: 16px; margin-bottom: -4px;" class="d-block">{{expense.name}}</span>
-                <span class="text-muted" style="font-size: 14px;">{{utilsService.getReadableDate(expense.date)}}</span>
+                <span class="text-muted" style="font-size: 14px;"><span style="text-transform: capitalize;">{{expense.category.toLowerCase()}}</span> • {{utilsService.getReadableDate(expense.date)}}</span>
             </div>
             <div class="flex-grow-1"></div>
             <div class="flex-shrink-0">
