@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
 import { Expense } from '../../types';
 import { UtilsService } from '../../services/utils.service';
 import { CommonModule } from '@angular/common';
@@ -11,19 +11,141 @@ import { BackendService } from '../../services/backend.service';
   templateUrl: './expense-list-item.component.html',
   styleUrl: './expense-list-item.component.scss'
 })
-export class ExpenseListItemComponent {
+export class ExpenseListItemComponent implements AfterViewInit {
 
   constructor(
     public utilsService: UtilsService,
     public backendService: BackendService
-  ) {}
+  ) { }
+
+  @ViewChild('myElement') myElement!: ElementRef<HTMLDivElement>;
+  @ViewChild('deleteDiv') deleteDiv!: ElementRef<HTMLDivElement>;
+  @ViewChild('editDiv') editDiv!: ElementRef<HTMLDivElement>;
+  @ViewChild('deleteIcon') deleteIcon!: ElementRef<HTMLDivElement>;
+  @ViewChild('editIcon') editIcon!: ElementRef<HTMLDivElement>;
+
+  isAnimatingBack = false;
+  deleteActive = false;
+  editActive = false;
+
+  ngAfterViewInit(): void {
+    import('hammerjs').then(({ default: Hammer }) => {
+      const hammer = new Hammer(this.myElement.nativeElement);
+
+      let posX = 0,
+        lastPosX = 0,
+        velocityX = 0;
+
+      hammer.on("panstart", (ev) => {
+        // If an animation is in progress, reset the element
+        if (this.isAnimatingBack) {
+          this.myElement.nativeElement.style.transition = "";
+          this.deleteDiv.nativeElement.style.transition = "";
+          this.editDiv.nativeElement.style.transition = "";
+          this.deleteIcon.nativeElement.style.transition = "";
+          this.editIcon.nativeElement.style.transition = "";
+          this.transformX = 0;
+          posX = 0;
+          lastPosX = 0;
+          this.isAnimatingBack = false;
+        }
+      });
+
+      hammer.on("panmove", (ev) => {
+        // Calculate position and apply transformation
+        posX = lastPosX + ev.deltaX;
+        velocityX = ev.velocityX;
+        this.transformX = posX;
+
+        if (posX > 40) {
+          this.deleteIcon.nativeElement.style.opacity = "1";
+        } else {
+          this.deleteIcon.nativeElement.style.opacity = "0";
+        }
+
+        if (posX < -40) {
+          this.editIcon.nativeElement.style.opacity = "1";
+        } else {
+          this.editIcon.nativeElement.style.opacity = "0";
+        }
+
+        // if it is dragged 25% of the width, activate the delete button
+        if (posX > this.myElement.nativeElement.offsetWidth * 0.4) {
+          this.deleteActive = true;
+          this.deleteIcon.nativeElement.style.fontSize = "24px";
+        } else {
+          this.deleteActive = false;
+          this.deleteIcon.nativeElement.style.fontSize = "16px";
+        }
+
+        // if it is dragged 25% of the width, activate the edit button
+        if (posX < -this.myElement.nativeElement.offsetWidth * 0.4) {
+          this.editActive = true;
+          this.editIcon.nativeElement.style.fontSize = "24px";
+        } else {
+          this.editActive = false;
+          this.editIcon.nativeElement.style.fontSize = "16px";
+        }
+      });
+
+      hammer.on("panend", async () => {
+        // Apply momentum based on velocity
+        posX += velocityX * 50; // adjust multiplier for desired momentum
+        this.transformX = posX;
+
+        if (this.editActive) {
+          console.log('edit');
+        }
+
+        if (this.deleteActive) {
+          this.myElement.nativeElement.style.transition = "transform 0.3s ease-out";
+          this.deleteDiv.nativeElement.style.transition = "transform 0.3s ease-out";
+          this.editDiv.nativeElement.style.transition = "transform 0.3s ease-out";
+          this.deleteIcon.nativeElement.style.transition = "transform 0.3s ease-out";
+          this.editIcon.nativeElement.style.transition = "transform 0.3s ease-out";
+          
+          this.transformX = this.myElement.nativeElement.offsetWidth + 6;
+          await this.deleteExpense();
+        }
+
+        if (!this.deleteActive) {
+          this.deleteIcon.nativeElement.style.opacity = "0";
+          this.editIcon.nativeElement.style.opacity = "0";
+        }
+
+        // Animate back to original position with ease-out
+        setTimeout(() => {
+          this.isAnimatingBack = true;
+          this.myElement.nativeElement.style.transition = "transform 0.3s ease-out";
+          this.deleteDiv.nativeElement.style.transition = "transform 0.3s ease-out";
+          this.editDiv.nativeElement.style.transition = "transform 0.3s ease-out";
+          this.deleteIcon.nativeElement.style.transition = "transform 0.3s ease-out";
+          this.editIcon.nativeElement.style.transition = "transform 0.3s ease-out";
+          this.transformX = 0;
+          lastPosX = 0;
+          // editActive = false;
+          // deleteActive = false;
+        }, 100); // adjust timeout for desired momentum duration
+
+        // Reset transition after animation
+        this.myElement.nativeElement.addEventListener("transitionend", () => {
+          this.myElement.nativeElement.style.transition = "";
+          this.deleteDiv.nativeElement.style.transition = "";
+          this.editDiv.nativeElement.style.transition = "";
+          this.deleteIcon.nativeElement.style.transition = "";
+          this.editIcon.nativeElement.style.transition = "";
+          this.isAnimatingBack = false;
+        });
+      });
+    });
+  }
 
   @Input() expense!: Expense;
 
-  menuOpenend = false;
+  transformX = 0;
 
-  deleteExpense(): void {
-    this.backendService.deleteExpense(this.expense.id);
+  async deleteExpense(): Promise<void> {
+    await this.backendService.deleteExpense(this.expense.id);
   }
 
 }

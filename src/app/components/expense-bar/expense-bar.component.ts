@@ -15,7 +15,7 @@ import { UtilsService } from '../../services/utils.service';
 export class ExpenseBarComponent implements OnInit {
 
   constructor(
-    private backendService: BackendService,
+    public backendService: BackendService,
     public utilsService: UtilsService
   ) { }
 
@@ -51,6 +51,22 @@ export class ExpenseBarComponent implements OnInit {
 
   public widthsPerCategoryKeyValues$ = this.widthsPerCategory$.pipe(
     map(widthsPerCategory => Object.entries(widthsPerCategory))
+  );
+
+  formattedBudget$ = this.backendService.budget$.pipe(
+    filter(budget => budget !== null),
+    map(budget => this.utilsService.formatCurrency(budget!))
+  );
+
+  totalExpenseAmountForCurrentMonth$ = this.backendService.expensesForCurrentMonth$.pipe(
+    filter(expenses => expenses !== null),
+    map(expenses => {
+      return expenses!.reduce((acc, expense) => acc + expense.amount, 0);
+    })
+  );
+
+  totalExpenseAmountForCurrentMonthFormatted$ = this.totalExpenseAmountForCurrentMonth$.pipe(
+    map(amount => this.utilsService.formatCurrency(amount))
   );
 
   ngOnInit(): void {

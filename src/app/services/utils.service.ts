@@ -42,7 +42,7 @@ export class UtilsService {
   }
 
   public formatCurrency(amount: number): string {
-    return amount.toFixed(2).replace('.', ',') + ' €';
+    return amount.toFixed(2).replace('.', ',');
   }
 
   public getCategoryColor(category: string) {

@@ -47,6 +47,8 @@ export class BackendService {
       });
       const newExpense = await res.json() as Expense;
       newExpense.date = new Date(newExpense.date);
+      this.expensesForMonth.next({ ...this.expensesForMonth.getValue(), [`${expense.date.getFullYear()}-${expense.date.getMonth() + 1}`]: [...(this.expensesForMonth.getValue()[`${expense.date.getFullYear()}-${expense.date.getMonth() + 1}`] || []), newExpense] });
+      return;
     }
     const newExpense = { ...expense, id: Math.random().toString() };
     this.expensesForMonth.next({ ...this.expensesForMonth.getValue(), [`${expense.date.getFullYear()}-${expense.date.getMonth() + 1}`]: [...(this.expensesForMonth.getValue()[`${expense.date.getFullYear()}-${expense.date.getMonth() + 1}`] || []), newExpense] });
