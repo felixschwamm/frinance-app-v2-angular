@@ -3,6 +3,7 @@ import { BackendService } from '../../services/backend.service';
 import { Observable, combineLatest, filter, map } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { UtilsService } from '../../services/utils.service';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 @Component({
   selector: 'app-header',
@@ -15,7 +16,8 @@ export class HeaderComponent {
 
   constructor(
     public backendService: BackendService,
-    public utilsService: UtilsService
+    public utilsService: UtilsService,
+    private oauthService: OAuthService
   ) {}
 
   currentMonth = new Date().getMonth();
@@ -25,5 +27,12 @@ export class HeaderComponent {
       return this.utilsService.formatCurrency(remainingBudget!);
     })
   );
+
+  signOut() {
+    this.oauthService.revokeTokenAndLogout({
+      token: this.oauthService.getRefreshToken()
+    });
+    this.oauthService.logOut();
+  }
 
 }

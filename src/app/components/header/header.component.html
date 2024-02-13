@@ -8,5 +8,11 @@
         </span>
         <span class="text-muted" style="font-size: 14px;">übrig für {{utilsService.getMonthName(currentMonth)}}</span>
     </div>
-    <div style="height: 45px; width: 45px; background-color: black; border-radius: 45px;"></div>
+    <div class="dropstart">
+        <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" id="dropdownMenuButton"
+            style="height: 45px; width: 45px; background-color: black; border-radius: 45px;"></button>
+        <div class="dropdown-menu " aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" (click)="signOut()" href="#">Abmelden</a>
+        </div>
+    </div>
 </div>

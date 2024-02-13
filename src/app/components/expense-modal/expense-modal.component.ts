@@ -7,11 +7,11 @@ import { ExpenseCategory } from '../../types';
 import { BackendService } from '../../services/backend.service';
 
 @Component({
-    selector: 'app-expense-modal',
-    standalone: true,
-    templateUrl: './expense-modal.component.html',
-    styleUrl: './expense-modal.component.scss',
-    imports: [CommonModule, CategorySelectComponent, CurrencyInputComponent, FormsModule]
+  selector: 'app-expense-modal',
+  standalone: true,
+  templateUrl: './expense-modal.component.html',
+  styleUrl: './expense-modal.component.scss',
+  imports: [CommonModule, CategorySelectComponent, CurrencyInputComponent, FormsModule]
 })
 export class ExpenseModalComponent {
 
@@ -20,7 +20,7 @@ export class ExpenseModalComponent {
 
   constructor(
     private backendService: BackendService
-  ) {}
+  ) { }
 
   selectedPage: number = 0;
 
@@ -33,18 +33,19 @@ export class ExpenseModalComponent {
     this.openedChange.emit(this.opened);
   }
 
-  async submit(): Promise<void> {
-    await this.backendService.addNewExpense({
+  submit(): void {
+    this.backendService.addNewExpense({
       amount: this.amountInputValue,
       category: this.catecoryValue,
       name: this.nameInputValue,
       date: new Date()
+    }).subscribe(() => {
+      this.opened = false;
+      this.amountInputValue = 0;
+      this.nameInputValue = "";
+      this.catecoryValue = ExpenseCategory.SONSTIGES;
+      this.openedChange.emit(this.opened);
     });
-    this.opened = false;
-    this.amountInputValue = 0;
-    this.nameInputValue = "";
-    this.catecoryValue = ExpenseCategory.SONSTIGES;
-    this.openedChange.emit(this.opened);
   }
 
   handleNameInput(event: Event): void {
@@ -56,7 +57,7 @@ export class ExpenseModalComponent {
     if (input.value.length > 40) {
       input.value = input.value.substring(0, 50);
     }
-    
+
   }
 
 }

@@ -22,7 +22,6 @@ export class ExpenseBarComponent implements OnInit {
   private widthsPerCategory$ = combineLatest([this.backendService.expensesForCurrentMonth$, this.backendService.budget$]).pipe(
     filter(([expensesForCurrentMonth, budget]) => expensesForCurrentMonth !== null),
     map(([expensesForCurrentMonth, budget]) => {
-      console.log(Object.keys(ExpenseCategory))
       if (budget === null || expensesForCurrentMonth === null) {
         return Object.keys(ExpenseCategory).filter(key => isNaN(Number(key))).reduce((acc, category) => {
           return {
@@ -36,7 +35,6 @@ export class ExpenseBarComponent implements OnInit {
       const totalAmount = expenses.reduce((acc, expense) => acc + expense.amount, 0);
 
       return Object.keys(ExpenseCategory).filter(key => isNaN(Number(key))).reduce((acc, category) => {
-        console.log('category', category);
         const categoryExpenses = expenses.filter(expense => expense.category === category);
         const categoryAmount = categoryExpenses.reduce((acc, expense) => acc + expense.amount, 0);
         const categoryWidth = totalAmount > budget ? (categoryAmount / totalAmount) * 100 : (categoryAmount / budget) * 100;

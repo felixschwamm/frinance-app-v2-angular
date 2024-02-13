@@ -3,6 +3,7 @@ import { Expense } from '../../types';
 import { UtilsService } from '../../services/utils.service';
 import { CommonModule } from '@angular/common';
 import { BackendService } from '../../services/backend.service';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-expense-list-item',
@@ -118,7 +119,7 @@ export class ExpenseListItemComponent implements AfterViewInit {
         this.transformX = posX;
 
         if (this.editActive) {
-          console.log('edit');
+          console.log('edit ' + this.expense.id);
         }
 
         if (this.deleteActive) {
@@ -169,7 +170,7 @@ export class ExpenseListItemComponent implements AfterViewInit {
   transformX = 0;
 
   async deleteExpense(): Promise<void> {
-    await this.backendService.deleteExpense(this.expense.id);
+    return lastValueFrom(this.backendService.deleteExpense(this.expense.id));
   }
 
 }

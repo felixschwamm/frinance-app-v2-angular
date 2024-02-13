@@ -4,7 +4,7 @@ import { ExpenseListItemComponent } from "../expense-list-item/expense-list-item
 import { CommonModule } from '@angular/common';
 import { BackendService } from '../../services/backend.service';
 import { SelectComponent } from "../select/select.component";
-import { BehaviorSubject, Observable, Subject, combineLatest, debounceTime, map, of } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, combineLatest, debounceTime, map, of, skip } from 'rxjs';
 import { MonthSelectComponent } from "../month-select/month-select.component";
 
 @Component({
@@ -27,7 +27,7 @@ export class ExpenseListComponent implements OnInit {
   );
 
   ngOnInit(): void {
-      this.selectedMonthDebounced$.subscribe(selectedMonth => {
+      this.selectedMonthDebounced$.pipe(skip(1)).subscribe(selectedMonth => {
         this.backendService.updateExpensesForMonth(selectedMonth.year, selectedMonth.month);
       });
   }

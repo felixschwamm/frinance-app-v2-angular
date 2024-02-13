@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Expense, ExpenseCategory } from '../types';
 import { environment } from '../../environments/environment';
-import { BehaviorSubject, Observable, combineLatest, map } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, map, subscribeOn } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -27,59 +28,68 @@ export class BackendService {
       return budget - totalExpenses;
     })
   );
+  private overview: BehaviorSubject<{ [year: number]: { [category: string]: number }[] }> = new BehaviorSubject({});
+  public overview$ = this.overview.asObservable();
 
-  constructor() { }
+  constructor(
+    private http: HttpClient
+  ) { }
 
-  private async fetchExpensesForMonth(year: number, month: number): Promise<Expense[]> {
-    const res = await fetch(environment.API_BASE_URL + `/expenses?year=${year}&month=${month}`);
-    const data = await res.json();
-    return data;
+  private fetchOverviewForYear(year: number): Observable<{ [category: string]: number }[]> {
+    return this.http.get(environment.API_BASE_URL + `/overview?year=${year}`) as Observable<{ [category: string]: number }[]>;
   }
 
-  public async addNewExpense(expense: { name: string, amount: number, category: ExpenseCategory, date: Date }): Promise<void> {
-    if (!environment.ENABLE_FAKE_FETCH) {
-      const res = await fetch(environment.API_BASE_URL + '/expenses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(expense)
+  private fetchExpensesForMonth(year: number, month: number): Observable<Expense[]> {
+    return this.http.get(environment.API_BASE_URL + `/expenses?year=${year}&month=${month}`) as Observable<Expense[]>;
+  }
+
+  public updateOverviewForYear(year: number): Observable<void> {
+    return new Observable(subscriber => {
+      const overview = this.overview.getValue();
+      delete overview[year];
+      this.overview.next(overview);
+      this.fetchOverviewForYear(year).subscribe((overviewForYear) => {
+        this.overview.next({ ...this.overview.getValue(), [year]: overviewForYear });
       });
-      const newExpense = await res.json() as Expense;
-      newExpense.date = new Date(newExpense.date);
-      this.expensesForMonth.next({ ...this.expensesForMonth.getValue(), [`${expense.date.getFullYear()}-${expense.date.getMonth() + 1}`]: [...(this.expensesForMonth.getValue()[`${expense.date.getFullYear()}-${expense.date.getMonth() + 1}`] || []), newExpense] });
-      return;
-    }
-    const newExpense = { ...expense, id: Math.random().toString() };
-    this.expensesForMonth.next({ ...this.expensesForMonth.getValue(), [`${expense.date.getFullYear()}-${expense.date.getMonth() + 1}`]: [...(this.expensesForMonth.getValue()[`${expense.date.getFullYear()}-${expense.date.getMonth() + 1}`] || []), newExpense] });
+      subscriber.next();
+      subscriber.complete();
+    });
   }
 
-  public async fetchBudget(): Promise<number> {
-    const res = await fetch(environment.API_BASE_URL + '/budget');
-    const data = await res.json();
-    return data.budget;
-  }
-
-  public async deleteExpense(id: string): Promise<void> {
-    if (!environment.ENABLE_FAKE_FETCH) {
-      await fetch(environment.API_BASE_URL + `/expenses/${id}`, {
-        method: 'DELETE'
+  public addNewExpense(expense: { name: string, amount: number, category: ExpenseCategory, date: Date }): Observable<void> {
+    return new Observable(subscriber => {
+      this.http.post(environment.API_BASE_URL + '/expenses', expense).subscribe((body: any) => {
+        const newExpense = { ...expense, id: body.id };
+        this.expensesForMonth.next({ ...this.expensesForMonth.getValue(), [`${expense.date.getFullYear()}-${expense.date.getMonth() + 1}`]: [...(this.expensesForMonth.getValue()[`${expense.date.getFullYear()}-${expense.date.getMonth() + 1}`] || []), newExpense] });
+        subscriber.next();
+        subscriber.complete();
       });
-    }
-    const expensesForMonth = this.expensesForMonth.getValue();
-    const newExpensesForMonth: { [key: string]: Expense[] } = {};
-    for (const key in expensesForMonth) {
-      newExpensesForMonth[key] = expensesForMonth[key].filter(expense => expense.id !== id);
-    }
-    this.expensesForMonth.next(newExpensesForMonth);
+    });
+  }
+
+  public fetchBudget(): Observable<number> {
+    return this.http.get(environment.API_BASE_URL + '/budget').pipe(
+      map((body: any) => body.budget)
+    ) as Observable<number>;
+  }
+
+  public deleteExpense(id: string): Observable<void> {
+    return new Observable(subscriber => {
+      this.http.delete(environment.API_BASE_URL + `/expenses/${id}`).subscribe(() => {
+        const expensesForMonth = this.expensesForMonth.getValue();
+        const newExpensesForMonth: { [key: string]: Expense[] } = {};
+        for (const key in expensesForMonth) {
+          newExpensesForMonth[key] = expensesForMonth[key].filter(expense => expense.id !== id);
+        }
+        this.expensesForMonth.next(newExpensesForMonth);
+        subscriber.next();
+        subscriber.complete();
+      });
+    });
   }
 
   public updateBudget(): void {
-    if (environment.ENABLE_FAKE_FETCH) {
-      this.budget.next(1000);
-      return;
-    }
-    this.fetchBudget().then((budget) => {
+    this.fetchBudget().subscribe((budget) => {
       this.budget.next(budget);
     });
   }
@@ -99,29 +109,7 @@ export class BackendService {
   public updateExpensesForMonth(year: number, month: number): void {
     this.deleteExpensesForMonth(year, month);
     const key = `${year}-${month}`;
-    if (environment.ENABLE_FAKE_FETCH) {
-      this.expensesForMonth.next({
-        ...this.expensesForMonth.getValue(),
-        [key]: [
-          {
-            id: '1',
-            name: 'Miete',
-            amount: 600,
-            category: ExpenseCategory.WOHNEN,
-            date: new Date('2021-01-01')
-          },
-          {
-            id: '2',
-            name: 'Essen',
-            amount: 200,
-            category: ExpenseCategory.ESSEN,
-            date: new Date('2021-01-02')
-          }
-        ]
-      });
-      return;
-    }
-    this.fetchExpensesForMonth(year, month).then((expenses) => {
+    this.fetchExpensesForMonth(year, month).subscribe((expenses) => {
       expenses = expenses.map((expense: any) => {
         return {
           id: expense.id,
