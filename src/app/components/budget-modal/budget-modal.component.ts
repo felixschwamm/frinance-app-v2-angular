@@ -29,6 +29,10 @@ export class BudgetModalComponent implements OnInit {
 
   async submit(): Promise<void> {
     await lastValueFrom(this.backendService.setNewBudget(this.budget!));
+    this.close();
+  }
+
+  close(): void {
     this.openend = false;
     this.openendChange.emit(this.openend);
   }
