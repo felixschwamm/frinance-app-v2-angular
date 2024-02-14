@@ -46,6 +46,7 @@ export class ExpenseModalComponent implements OnInit {
     this.expenseModalService.toggleModal(false);
     this.expenseModalService.updateModalData(0, "", ExpenseCategory.SONSTIGES);
     this.expenseModalService.setModalMode("add");
+    this.selectedPage = 0;
   }
 
   submit(): void {
