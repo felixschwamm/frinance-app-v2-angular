@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { UtilsService } from '../../services/utils.service';
 import { ExpenseCategory } from '../../types';
 
@@ -10,7 +10,7 @@ import { ExpenseCategory } from '../../types';
   templateUrl: './category-select.component.html',
   styleUrl: './category-select.component.scss'
 })
-export class CategorySelectComponent {
+export class CategorySelectComponent implements OnChanges {
 
   constructor(
     public utilsService: UtilsService
@@ -18,6 +18,12 @@ export class CategorySelectComponent {
 
   @Input() selected: ExpenseCategory = ExpenseCategory.SONSTIGES;
   @Output() selectedChange: EventEmitter<ExpenseCategory> = new EventEmitter<ExpenseCategory>();
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['selected']) {
+      this.changeSelected(changes['selected'].currentValue);
+    }
+  }
 
   categories = Object.keys(ExpenseCategory);
 

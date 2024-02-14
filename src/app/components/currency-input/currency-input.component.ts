@@ -31,6 +31,9 @@ export class CurrencyInputComponent implements OnChanges, AfterViewInit {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['value']) {
+      if (this.input) {
+        this.input.nativeElement.value = this.formatCurrencyInput(this.value.toFixed(2) ?? "0");
+      }
       this.handleValueChange();
     }
   }

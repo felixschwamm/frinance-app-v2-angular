@@ -1,10 +1,11 @@
 <div class="p-3 pt-0" style="padding-bottom: 100px !important">
-    <app-header></app-header>
+    <app-header (openBudgetModal)="budgetModalOpened = true"></app-header>
     <div class="mb-2">
         <app-expense-bar></app-expense-bar>
     </div>
     <app-expense-list></app-expense-list>
     <!--<app-overview></app-overview>-->
 </div>
-<app-fab  (click)="expenseModalOpened = true"></app-fab>
-<app-expense-modal [(opened)]="expenseModalOpened"></app-expense-modal>
+<app-fab  (click)="expenseModalService.toggleModal(true)"></app-fab>
+<app-expense-modal></app-expense-modal>
+<app-budget-modal [(openend)]="budgetModalOpened"></app-budget-modal>

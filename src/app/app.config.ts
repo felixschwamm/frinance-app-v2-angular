@@ -19,8 +19,9 @@ function initializeOAuth(oauthService: OAuthService): Function {
     strictDiscoveryDocumentValidation: false,
     showDebugInformation: true, // Turn off in production,
     requireHttps: false, // Turn off in production
+    logoutUrl: 'https://finance-tracker-auth.auth.eu-central-1.amazoncognito.com/logout?client_id=40u3oh3d4dghv1fuq0usadauau&logout_uri=' + window.location.origin + '/index.html',
   });
-  return () => oauthService.loadDiscoveryDocumentAndTryLogin();
+  return () => oauthService.loadDiscoveryDocumentAndLogin();
 }
 
 export const appConfig: ApplicationConfig = {

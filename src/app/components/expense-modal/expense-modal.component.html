@@ -1,4 +1,4 @@
-<div class="position-fixed bg-white w-100 h-100" style="top: 0; left: 0; transition: transform .2s ease-out;" [style]="{'transform': !opened ? 'translateY(100%)' : 'translateY(0%)'}">
+<div class="position-fixed bg-white w-100 h-100" style="top: 0; left: 0; transition: transform .2s ease-out;" [style]="{'transform': !(expenseModalService.modalOpened$ | async) ? 'translateY(100%)' : 'translateY(0%)'}">
     <div class="w-100 h-50 d-flex flex-column" style="position: fixed; top: 0; left: 0;" [ngClass]="{'pe-none invisible': selectedPage !== 0}">
         <div class="flex-grow-1 d-flex align-items-center justify-content-center">
             <div class="text-center">

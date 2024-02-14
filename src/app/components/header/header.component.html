@@ -8,11 +8,23 @@
         </span>
         <span class="text-muted" style="font-size: 14px;">übrig für {{utilsService.getMonthName(currentMonth)}}</span>
     </div>
-    <div class="dropstart">
-        <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" id="dropdownMenuButton"
-            style="height: 45px; width: 45px; background-color: black; border-radius: 45px;"></button>
-        <div class="dropdown-menu " aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" (click)="signOut()" href="#">Abmelden</a>
-        </div>
+    <div class="btn-group dropstart">
+        <button style="height: 45px; width: 45px; border-radius: 45px;" type="button" class="btn btn-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa-solid fa-user"></i>
+        </button>
+        <ul class="dropdown-menu">
+            <li>
+                <button (click)="openBudgetModal.emit()" class="dropdown-item" type="button">
+                    <span>&nbsp;Budget anpassen</span>
+                </button>
+            </li>
+            <li class="dropdown-divider"></li>
+            <li>
+                <button (click)="signOut()" class="dropdown-item text-danger" type="button">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>&nbsp;Abmelden</span>
+                </button>
+            </li>
+        </ul>
     </div>
 </div>

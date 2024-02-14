@@ -67,6 +67,35 @@ export class BackendService {
     });
   }
 
+  private editExpenseLocal(id: string, expense: { name: string, amount: number, category: ExpenseCategory, date: Date }): void {
+    const expensesForMonth = this.expensesForMonth.getValue();
+    const newExpensesForMonth: { [key: string]: Expense[] } = {};
+    for (const key in expensesForMonth) {
+      newExpensesForMonth[key] = expensesForMonth[key].map(exp => exp.id === id ? { ...exp, ...expense } : exp);
+    }
+    this.expensesForMonth.next(newExpensesForMonth);
+  }
+
+  public editExpense(id: string, expense: { name: string, amount: number, category: ExpenseCategory, date: Date }): Observable<void> {
+    return new Observable(subscriber => {
+      this.http.put(environment.API_BASE_URL + `/expenses/${id}`, expense).subscribe(() => {
+        this.editExpenseLocal(id, expense);
+        subscriber.next();
+        subscriber.complete();
+      });
+    });
+  }
+
+  public setNewBudget(newBudget: number): Observable<void> {
+    return new Observable(subscriber => {
+      this.http.put(environment.API_BASE_URL + '/budget', { budget: newBudget }).subscribe(() => {
+        this.budget.next(newBudget);
+        subscriber.next();
+        subscriber.complete();
+      });
+    });
+  }
+
   public fetchBudget(): Observable<number> {
     return this.http.get(environment.API_BASE_URL + '/budget').pipe(
       map((body: any) => body.budget)

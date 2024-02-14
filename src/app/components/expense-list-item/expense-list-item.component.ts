@@ -4,6 +4,7 @@ import { UtilsService } from '../../services/utils.service';
 import { CommonModule } from '@angular/common';
 import { BackendService } from '../../services/backend.service';
 import { lastValueFrom } from 'rxjs';
+import { ExpenseModalService } from '../../services/expense-modal.service';
 
 @Component({
   selector: 'app-expense-list-item',
@@ -16,7 +17,8 @@ export class ExpenseListItemComponent implements AfterViewInit {
 
   constructor(
     public utilsService: UtilsService,
-    public backendService: BackendService
+    public backendService: BackendService,
+    private expenseModalService: ExpenseModalService
   ) { }
 
   @ViewChild('myElement') myElement!: ElementRef<HTMLDivElement>;
@@ -119,7 +121,7 @@ export class ExpenseListItemComponent implements AfterViewInit {
         this.transformX = posX;
 
         if (this.editActive) {
-          console.log('edit ' + this.expense.id);
+          await this.editExpense();
         }
 
         if (this.deleteActive) {
@@ -168,6 +170,12 @@ export class ExpenseListItemComponent implements AfterViewInit {
   @Input() expense!: Expense;
 
   transformX = 0;
+
+  async editExpense(): Promise<void> {
+    this.expenseModalService.toggleModal(true);
+    this.expenseModalService.updateModalData(this.expense.amount, this.expense.name, this.expense.category, this.expense.id);
+    this.expenseModalService.setModalMode('edit');
+  }
 
   async deleteExpense(): Promise<void> {
     return lastValueFrom(this.backendService.deleteExpense(this.expense.id));

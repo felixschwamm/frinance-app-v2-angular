@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { BackendService } from '../../services/backend.service';
 import { Observable, combineLatest, filter, map } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -13,6 +13,8 @@ import { OAuthService } from 'angular-oauth2-oidc';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
+
+  @Output() openBudgetModal: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(
     public backendService: BackendService,
@@ -29,9 +31,6 @@ export class HeaderComponent {
   );
 
   signOut() {
-    this.oauthService.revokeTokenAndLogout({
-      token: this.oauthService.getRefreshToken()
-    });
     this.oauthService.logOut();
   }
 
