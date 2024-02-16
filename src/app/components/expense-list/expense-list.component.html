@@ -1,7 +1,8 @@
 <span style="font-size: 26px; font-weight: 600;">Ausgaben</span>
 <div class="w-100 d-flex justify-content-between align-items-center mb-2">
     <app-select (selectedChange)="handleSelectedSortingChange($event)" [items]="['neu', 'teuer']"></app-select>
-    <app-month-select [selected]="selectedMonth$.getValue()" (selectedChange)="onSelectedMonthChange($event)"></app-month-select>
+    <app-month-select [selected]="selectedMonth$.getValue()"
+        (selectedChange)="onSelectedMonthChange($event)"></app-month-select>
 </div>
 <ng-container *ngIf="(expenses$ | async) as expenses; else loading">
     <ng-container *ngIf="expenses.length; else noExpenses">
@@ -10,12 +11,12 @@
         </ng-container>
     </ng-container>
     <ng-template #noExpenses>
-        <div class="d-flex flex-column align-items-center text-muted p-3 py-4 rounded border border-light">
+        <div class="d-flex flex-column align-items-center text-muted p-3 py-4 rounded border border-dark">
             <img class="mb-3" height="80" src="assets/money-mouth-face.png">
             <span>Keine Ausgaben für diesen Monat</span>
         </div>
     </ng-template>
 </ng-container>
 <ng-template #loading>
-    <div class="text-center text-muted p-3 rounded border border-light">Laden...</div>
+    <div class="text-center text-muted p-3 rounded border border-dark">Laden...</div>
 </ng-template>

@@ -1,1 +1,3 @@
-<button class="btn border rounded me-1" *ngFor="let item of items; index as i" [ngClass]="{'btn-primary border-primary': selected === i}" (click)="change(i)">{{ item }}</button>
+<button class="btn border border-dark rounded me-1" *ngFor="let item of items; index as i"
+    [ngClass]="{'btn-tab border-tab': selected === i, 'bg-dark text-light': selected !== i}" (click)="change(i)">{{ item
+    }}</button>

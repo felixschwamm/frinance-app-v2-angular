@@ -1,5 +1,8 @@
-<div class="rounded border border-light d-flex align-items-center" style="height: 36px; width: 170px; touch-action: manipulation;">
-    <button style="all: unset" class="h-100 px-3" (click)="previousMonth()"> < </button>
-    <span class="flex-grow-1 text-center">{{utilsService.getMonthName(selected.month - 1, true)}} {{selected.year}}</span>
-    <button style="all: unset" class="h-100 px-3" (click)="nextMonth()"> > </button>
+<div class="rounded border border-dark d-flex align-items-center bg-dark"
+    style=" height: 36px; width: 170px; touch-action: manipulation;">
+    <button style="all: unset" class="h-100 px-3" (click)="previousMonth()">
+        < </button>
+            <span class="flex-grow-1 text-center">{{utilsService.getMonthName(selected.month - 1, true)}}
+                {{selected.year}}</span>
+            <button style="all: unset" class="h-100 px-3" (click)="nextMonth()"> > </button>
 </div>

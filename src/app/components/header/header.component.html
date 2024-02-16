@@ -9,12 +9,13 @@
         <span class="text-muted" style="font-size: 14px;">übrig für {{utilsService.getMonthName(currentMonth)}}</span>
     </div>
     <div class="btn-group dropstart">
-        <button style="height: 45px; width: 45px; border-radius: 45px;" type="button" class="btn btn-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+        <button style="height: 45px; width: 45px; border-radius: 45px;" type="button" class="btn btn-secondary"
+            data-bs-toggle="dropdown" aria-expanded="false">
             <i class="fa-solid fa-user"></i>
         </button>
-        <ul class="dropdown-menu">
+        <ul class="dropdown-menu bg-dark border-dark">
             <li>
-                <button (click)="openBudgetModal.emit()" class="dropdown-item" type="button">
+                <button (click)="openBudgetModal.emit()" class="dropdown-item text-light" type="button">
                     <span>&nbsp;Budget anpassen</span>
                 </button>
             </li>
