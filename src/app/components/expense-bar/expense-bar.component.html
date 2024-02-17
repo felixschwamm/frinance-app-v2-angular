@@ -1,4 +1,8 @@
-<div class="d-flex rounded-2 border-light border overflow-hidden" style="height: 30px;">
-    <div *ngFor="let barWidth of widthsPerCategoryKeyValues$ | async" [ngStyle]="{'width': barWidth[1] + '%', 'background-color': '#' + utilsService.getCategoryColor(barWidth[0])}"></div>
+<div class="d-flex rounded-2 border-dark border overflow-hidden" style="height: 30px;">
+    <div *ngFor="let barWidth of widthsPerCategoryKeyValues$ | async"
+        [ngStyle]="{'width': barWidth[1] + '%', 'background-color': '#' + utilsService.getCategoryColor(barWidth[0])}">
+    </div>
 </div>
-<span style="font-size: 14px;">{{totalExpenseAmountForCurrentMonthFormatted$ | async}} / {{formattedBudget$ | async}} € <span style="font-size: 12px;" class="text-muted">ausgegeben</span></span>
+<span style="font-size: 14px;" class="text-muted">{{totalExpenseAmountForCurrentMonthFormatted$ | async}} /
+    {{formattedBudget$ | async}} €
+    <span style="font-size: 12px;" class="text-muted">ausgegeben</span></span>

@@ -1,11 +1,13 @@
 <div class="w-100 overflow-hidden rounded d-flex mb-1 position-relative">
-    <i [style]="{'transform': 'translateX(calc(-50% + ' + (transformX / 2) + 'px - 3px)) translateY(-50%)'}" #deleteIcon class="fa-solid fa-trash text-white" style="position: absolute; left: 0; top: 50%; z-index: 99; transform: translateX(-50%) translateY(-50%); transition: opacity .2s ease-out; opacity: 0, opacity .2s ease-out, font-size .2s ease-out; opacity: 0;"></i>
+    <i [style]="{'transform': 'translateX(calc(-50% + ' + (transformX / 2) + 'px - 3px)) translateY(-50%)'}" #deleteIcon
+        class="fa-solid fa-trash text-white"
+        style="position: absolute; left: 0; top: 50%; z-index: 99; transform: translateX(-50%) translateY(-50%); transition: opacity .2s ease-out; opacity: 0, opacity .2s ease-out, font-size .2s ease-out; opacity: 0;"></i>
     <div #deleteDiv class="w-100 flex-shrink-0" style="padding: 0 6px; width: calc(100% + 12px)!important;"
         [style]="{'transform': 'translateX(calc(' + (transformX) + 'px - 100%))'}">
         <div class="bg-danger w-100 h-100 rounded">
         </div>
     </div>
-    <div #myElement class="w-100 border bg-white border-light rounded flex-shrink-0" style="padding: 12px 0;"
+    <div #myElement class="w-100 border bg-dark border-dark rounded flex-shrink-0" style="padding: 12px 0;"
         [style]="{'transform': 'translateX(calc(' + (transformX) + 'px - 100% - 12px))'}">
         <div class="d-flex align-items-center">
             <div [style]="{'background-color': '#' + utilsService.getCategoryColor(expense.category)}"
@@ -13,7 +15,9 @@
             </div>
             <div class="px-2">
                 <span style="font-size: 16px; margin-bottom: -4px;" class="d-block">{{expense.name}}</span>
-                <span class="text-muted" style="font-size: 14px;"><span style="text-transform: capitalize;">{{expense.category.toLowerCase()}}</span> • {{utilsService.getReadableDate(expense.date)}}</span>
+                <span class="text-muted" style="font-size: 14px;"><span
+                        style="text-transform: capitalize;">{{expense.category.toLowerCase()}}</span> •
+                    {{utilsService.getReadableDate(expense.date)}}</span>
             </div>
             <div class="flex-grow-1"></div>
             <div class="flex-shrink-0">
@@ -25,5 +29,7 @@
         [style]="{'transform': 'translateX(calc(' + (transformX) + 'px - 100%))'}">
         <div class="bg-primary w-100 h-100 rounded"></div>
     </div>
-    <i [style]="{'transform': 'translateX(calc(50% + ' + (transformX / 2) + 'px + 3px)) translateY(-50%)'}" #editIcon class="fa-solid fa-pen text-white" style="position: absolute; right: 0; top: 50%; z-index: 99; transform: translateX(-50%) translateY(-50%); transition: opacity .2s ease-out; opacity: 0, opacity .2s ease-out, font-size .2s ease-out; opacity: 0;"></i>
+    <i [style]="{'transform': 'translateX(calc(50% + ' + (transformX / 2) + 'px + 3px)) translateY(-50%)'}" #editIcon
+        class="fa-solid fa-pen text-white"
+        style="position: absolute; right: 0; top: 50%; z-index: 99; transform: translateX(-50%) translateY(-50%); transition: opacity .2s ease-out; opacity: 0, opacity .2s ease-out, font-size .2s ease-out; opacity: 0;"></i>
 </div>

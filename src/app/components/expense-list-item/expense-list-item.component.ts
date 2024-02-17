@@ -80,7 +80,11 @@ export class ExpenseListItemComponent implements AfterViewInit {
         // Calculate position and apply transformation
         posX = lastPosX + ev.deltaX;
         velocityX = ev.velocityX;
-        this.transformX = posX;
+        if (posX > 0 && posX < this.myElement.nativeElement.offsetWidth * 0.6) {
+          this.transformX = posX;
+        } else if (posX < 0 && posX > -this.myElement.nativeElement.offsetWidth * 0.6) {
+          this.transformX = posX;
+        }
 
         if (posX > 40) {
           this.deleteIcon.nativeElement.style.opacity = "1";
@@ -130,7 +134,7 @@ export class ExpenseListItemComponent implements AfterViewInit {
           this.editDiv.nativeElement.style.transition = "transform 0.3s ease-out";
           this.deleteIcon.nativeElement.style.transition = "transform 0.3s ease-out";
           this.editIcon.nativeElement.style.transition = "transform 0.3s ease-out";
-          
+
           this.transformX = this.myElement.nativeElement.offsetWidth + 6;
           await this.deleteExpense();
         }

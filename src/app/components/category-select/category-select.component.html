@@ -1,8 +1,10 @@
 <div class="d-flex flex-column align-items-center">
-    <div class="w-100 py-2 border border-light mb-1 rounded text-capitalize d-flex align-items-center" style="max-width: 200px;"
-        *ngFor="let category of categories" (click)="changeSelected(category)" [style]="{'border-color': selected === category ? ('#' + utilsService.getCategoryColor(category) + ' !important') : ''}">
+    <div class="w-100 py-2 border border-dark bg-dark mb-1 rounded text-capitalize d-flex align-items-center"
+        style="max-width: 200px;" *ngFor="let category of categories" (click)="changeSelected(category)"
+        [style]="{'border-color': selected === category ? ('#' + utilsService.getCategoryColor(category) + ' !important') : '', 'color': selected === category ? ('#' + utilsService.getCategoryColor(category) + ' !important') : ''}">
 
-        <div style="margin-left: -1px; height: 20px; width: 8px; border-top-right-radius: 5px; border-bottom-right-radius: 5px;" [style]="{'background-color': '#' + utilsService.getCategoryColor(category)}"></div>
+        <div style="margin-left: -1px; height: 20px; width: 8px; border-top-right-radius: 5px; border-bottom-right-radius: 5px;"
+            [style]="{'background-color': '#' + utilsService.getCategoryColor(category)}"></div>
         <span class="flex-grow-1 text-center">{{category.toLowerCase()}}</span>
     </div>
 </div>

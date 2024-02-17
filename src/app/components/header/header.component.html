@@ -1,20 +1,33 @@
 <div class="d-flex justify-content-between align-items-center my-3">
     <div>
-        <span style="font-size: 36px; font-weight: 600; margin-bottom: -8px;" class="d-block">
-            <ng-container *ngIf="(remainingBudgetFormatted$ | async) as remainingBudget; else loading">
-                {{ remainingBudget }} €
+        <span style="font-size: 36px; font-weight: 600; margin-bottom: -8px;" class="d-block"
+            (click)="toggleDisplayRemainingBudget()">
+            <ng-container *ngIf="displayRemainingBudget">
+                <ng-container *ngIf="(remainingBudget$ | async) as remainingBudget; else loading">
+                    <p class="m-0" [ngClass]="{'text-danger': remainingBudget < 0}">{{
+                        this.utilsService.formatCurrency(remainingBudget!) }} €</p>
+                </ng-container>
+            </ng-container>
+            <ng-container *ngIf="!displayRemainingBudget">
+                <ng-container *ngIf="(expensesForMonth$ | async) as expensesForMonth; else loading">
+                    {{ this.utilsService.formatCurrency(expensesForMonth!) }} €
+                </ng-container>
             </ng-container>
             <ng-template #loading>Laden...</ng-template>
         </span>
-        <span class="text-muted" style="font-size: 14px;">übrig für {{utilsService.getMonthName(currentMonth)}}</span>
+        <span *ngIf="displayRemainingBudget" class="text-muted" style="font-size: 14px;">übrig für
+            {{utilsService.getMonthName(currentMonth)}}</span>
+        <span *ngIf="!displayRemainingBudget" class="text-muted" style="font-size: 14px;">ausgegeben im
+            {{utilsService.getMonthName(currentMonth)}}</span>
     </div>
     <div class="btn-group dropstart">
-        <button style="height: 45px; width: 45px; border-radius: 45px;" type="button" class="btn btn-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+        <button style="height: 45px; width: 45px; border-radius: 45px;" type="button" class="btn btn-secondary"
+            data-bs-toggle="dropdown" aria-expanded="false">
             <i class="fa-solid fa-user"></i>
         </button>
-        <ul class="dropdown-menu">
+        <ul class="dropdown-menu bg-dark border-dark">
             <li>
-                <button (click)="openBudgetModal.emit()" class="dropdown-item" type="button">
+                <button (click)="openBudgetModal.emit()" class="dropdown-item text-light" type="button">
                     <span>&nbsp;Budget anpassen</span>
                 </button>
             </li>
