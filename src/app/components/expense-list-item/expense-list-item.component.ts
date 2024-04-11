@@ -3,7 +3,7 @@ import { Expense } from '../../types';
 import { UtilsService } from '../../services/utils.service';
 import { CommonModule } from '@angular/common';
 import { BackendService } from '../../services/backend.service';
-import { lastValueFrom } from 'rxjs';
+import { Observable, Subject, buffer, debounce, debounceTime, filter, lastValueFrom, map, throttleTime } from 'rxjs';
 import { ExpenseModalService } from '../../services/expense-modal.service';
 
 @Component({
@@ -19,7 +19,11 @@ export class ExpenseListItemComponent implements AfterViewInit {
     public utilsService: UtilsService,
     public backendService: BackendService,
     private expenseModalService: ExpenseModalService
-  ) { }
+  ) {
+    this.doubleClickObservable.subscribe(async () => {
+      await this.handleDoubleClick();
+    });
+  }
 
   @ViewChild('myElement') myElement!: ElementRef<HTMLDivElement>;
   @ViewChild('deleteDiv') deleteDiv!: ElementRef<HTMLDivElement>;
@@ -31,6 +35,27 @@ export class ExpenseListItemComponent implements AfterViewInit {
   deleteActive = false;
   editActive = false;
   resetPositionTimeout: any;
+  clickObservable = new Subject<void>();
+  doubleClickObservable = this.clickObservable.pipe(
+    buffer(this.clickObservable.pipe(debounceTime(300))),
+    map(list => {
+      return list.length;
+    }),
+    filter(x => x >= 2)
+  );
+
+  async handleDoubleClick(): Promise<void> {
+    await lastValueFrom(this.backendService.addNewExpense({
+      name: this.expense.name,
+      amount: this.expense.amount,
+      category: this.expense.category,
+      date: new Date()
+    }));
+  }
+
+  handleClick(event: MouseEvent): void {
+    this.clickObservable.next();
+  }
 
   setResetPositionTimeout(): void {
     clearTimeout(this.resetPositionTimeout);

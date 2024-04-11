@@ -58,16 +58,23 @@ export class BackendService {
 
   public addNewExpense(expense: { name: string, amount: number, category: ExpenseCategory, date: Date }): Observable<void> {
     return new Observable(subscriber => {
-      this.http.post(environment.API_BASE_URL + '/expenses', expense).subscribe((body: any) => {
-        const newExpense = { ...expense, id: body.id };
-        this.expensesForMonth.next({ ...this.expensesForMonth.getValue(), [`${expense.date.getFullYear()}-${expense.date.getMonth() + 1}`]: [...(this.expensesForMonth.getValue()[`${expense.date.getFullYear()}-${expense.date.getMonth() + 1}`] || []), newExpense] });
-        subscriber.next();
-        subscriber.complete();
+      const newExpense = { ...expense, id: '#' + Date.now().toString() };
+      this.expensesForMonth.next({ ...this.expensesForMonth.getValue(), [`${expense.date.getFullYear()}-${expense.date.getMonth() + 1}`]: [...(this.expensesForMonth.getValue()[`${expense.date.getFullYear()}-${expense.date.getMonth() + 1}`] || []), newExpense] });
+      this.http.post(environment.API_BASE_URL + '/expenses', expense).subscribe({
+        next: (body: any) => {
+          this.editExpenseLocal(newExpense.id, { ...newExpense, id: body.id });
+          subscriber.next();
+          subscriber.complete();
+        },
+        error: (error) => {
+          this.deleteExpenseLocal(newExpense.id);
+          subscriber.error(error);
+        }
       });
     });
   }
 
-  private editExpenseLocal(id: string, expense: { name: string, amount: number, category: ExpenseCategory, date: Date }): void {
+  private editExpenseLocal(id: string, expense: { name: string, amount: number, category: ExpenseCategory, date: Date, id?: string }): void {
     const expensesForMonth = this.expensesForMonth.getValue();
     const newExpensesForMonth: { [key: string]: Expense[] } = {};
     for (const key in expensesForMonth) {
@@ -102,15 +109,19 @@ export class BackendService {
     ) as Observable<number>;
   }
 
+  private deleteExpenseLocal(id: string): void {
+    const expensesForMonth = this.expensesForMonth.getValue();
+    const newExpensesForMonth: { [key: string]: Expense[] } = {};
+    for (const key in expensesForMonth) {
+      newExpensesForMonth[key] = expensesForMonth[key].filter(expense => expense.id !== id);
+    }
+    this.expensesForMonth.next(newExpensesForMonth);
+  }
+
   public deleteExpense(id: string): Observable<void> {
     return new Observable(subscriber => {
       this.http.delete(environment.API_BASE_URL + `/expenses/${id}`).subscribe(() => {
-        const expensesForMonth = this.expensesForMonth.getValue();
-        const newExpensesForMonth: { [key: string]: Expense[] } = {};
-        for (const key in expensesForMonth) {
-          newExpensesForMonth[key] = expensesForMonth[key].filter(expense => expense.id !== id);
-        }
-        this.expensesForMonth.next(newExpensesForMonth);
+        this.deleteExpenseLocal(id);
         subscriber.next();
         subscriber.complete();
       });
