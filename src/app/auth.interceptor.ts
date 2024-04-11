@@ -8,7 +8,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = oauthService.getAccessToken();
 
   // Check if we have a token, and the request doesn't already have an Authorization header
-  if (token && !req.headers.has('Authorization')) {
+  if (token && !req.headers.has('Authorization') && !req.url.endsWith('/token')) {
     const authReq = req.clone({
       headers: req.headers.set('Authorization', `Bearer ${token}`)
     });
