@@ -1,4 +1,4 @@
-<div [ngStyle]="{'filter': this.expense.id.startsWith('#') ? 'brightness(.5)' : '', 'pointer-events': this.expense.id.startsWith('#') ? 'none' : 'auto'}" class="w-100 overflow-hidden rounded d-flex mb-1 position-relative" (click)="handleClick($event)">
+<div style="touch-action: manipulation;" [ngStyle]="{'filter': this.expense.id.startsWith('#') ? 'brightness(.5)' : '', 'pointer-events': this.expense.id.startsWith('#') ? 'none' : 'auto'}" class="w-100 overflow-hidden rounded d-flex mb-1 position-relative" (click)="handleClick($event)">
     <i [style]="{'transform': 'translateX(calc(-50% + ' + (transformX / 2) + 'px - 3px)) translateY(-50%)'}" #deleteIcon
         class="fa-solid fa-trash text-white"
         style="position: absolute; left: 0; top: 50%; z-index: 99; transform: translateX(-50%) translateY(-50%); transition: opacity .2s ease-out; opacity: 0, opacity .2s ease-out, font-size .2s ease-out; opacity: 0;"></i>
