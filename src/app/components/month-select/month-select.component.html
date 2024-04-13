@@ -1,8 +1,11 @@
 <div class="rounded border border-dark d-flex align-items-center bg-dark"
     style=" height: 36px; width: 170px; touch-action: manipulation;">
-    <button style="all: unset" class="h-100 px-3" (click)="previousMonth()">
-        < </button>
+    <button style="all: unset; font-size: 12px;" class="h-100 px-3" (click)="previousMonth()">
+        <i class="fa-solid fa-angle-left"></i>
+    </button>
             <span class="flex-grow-1 text-center">{{utilsService.getMonthName(selected.month - 1, true)}}
                 {{selected.year}}</span>
-            <button style="all: unset" class="h-100 px-3" (click)="nextMonth()"> > </button>
+    <button style="all: unset; font-size: 12px;" class="h-100 px-3" (click)="nextMonth()">
+        <i class="fa-solid fa-angle-right"></i>
+    </button>
 </div>
