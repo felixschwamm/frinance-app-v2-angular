@@ -63,6 +63,9 @@ export class ExpenseListItemComponent implements AfterViewInit {
       if (this.transformX > 50) {
         return;
       }
+      if (this.transformX < -50) {
+        return;
+      }
       this.isAnimatingBack = false;
       this.myElement.nativeElement.style.transition = "";
       this.deleteDiv.nativeElement.style.transition = "";

@@ -3,6 +3,6 @@
         [ngStyle]="{'width': barWidth[1] + '%', 'background-color': '#' + utilsService.getCategoryColor(barWidth[0])}">
     </div>
 </div>
-<span style="font-size: 14px;" class="text-muted">{{totalExpenseAmountForCurrentMonthFormatted$ | async}} /
+<span style="font-size: 14px;">{{totalExpenseAmountForCurrentMonthFormatted$ | async}} /
     {{formattedBudget$ | async}} €
-    <span style="font-size: 12px;" class="text-muted">ausgegeben</span></span>
+    <span style="font-size: 12px;">ausgegeben</span></span>
