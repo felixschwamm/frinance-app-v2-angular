@@ -4,6 +4,7 @@ export interface Expense {
     amount: number;
     category: ExpenseCategory;
     date: Date;
+    isIncome: boolean;
 }
 
 export enum ExpenseCategory {

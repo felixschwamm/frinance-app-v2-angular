@@ -24,7 +24,7 @@ export class BackendService {
       if (budget === null || expensesForCurrentMonth === null) {
         return null;
       }
-      const totalExpenses = expensesForCurrentMonth.reduce((acc, expense) => acc + expense.amount, 0);
+      const totalExpenses = expensesForCurrentMonth.reduce((acc, expense) => expense.isIncome ? acc - expense.amount : acc + expense.amount, 0);
       return budget - totalExpenses;
     })
   );
@@ -56,11 +56,16 @@ export class BackendService {
     });
   }
 
-  public addNewExpense(expense: { name: string, amount: number, category: ExpenseCategory, date: Date }): Observable<void> {
+  public addNewExpense(expense: { name: string, amount: number, category: ExpenseCategory, date: Date, isIncome: boolean }): Observable<void> {
     return new Observable(subscriber => {
       const newExpense = { ...expense, id: '#' + Date.now().toString() };
       this.expensesForMonth.next({ ...this.expensesForMonth.getValue(), [`${expense.date.getFullYear()}-${expense.date.getMonth() + 1}`]: [...(this.expensesForMonth.getValue()[`${expense.date.getFullYear()}-${expense.date.getMonth() + 1}`] || []), newExpense] });
-      this.http.post(environment.API_BASE_URL + '/expenses', expense).subscribe({
+      this.http.post(environment.API_BASE_URL + '/expenses', {
+        ...newExpense,
+        isIncome: undefined,
+        id: undefined,
+        amount: newExpense.isIncome ? -Math.abs(newExpense.amount) : Math.abs(newExpense.amount)
+      }).subscribe({
         next: (body: any) => {
           this.editExpenseLocal(newExpense.id, { ...newExpense, id: body.id });
           subscriber.next();
@@ -74,7 +79,7 @@ export class BackendService {
     });
   }
 
-  private editExpenseLocal(id: string, expense: { name: string, amount: number, category: ExpenseCategory, date: Date, id?: string }): void {
+  private editExpenseLocal(id: string, expense: { name: string, amount: number, category: ExpenseCategory, date: Date, id?: string, isIncome: boolean }): void {
     const expensesForMonth = this.expensesForMonth.getValue();
     const newExpensesForMonth: { [key: string]: Expense[] } = {};
     for (const key in expensesForMonth) {
@@ -83,9 +88,12 @@ export class BackendService {
     this.expensesForMonth.next(newExpensesForMonth);
   }
 
-  public editExpense(id: string, expense: { name: string, amount: number, category: ExpenseCategory, date: Date }): Observable<void> {
+  public editExpense(id: string, expense: { name: string, amount: number, category: ExpenseCategory, date: Date, isIncome: boolean }): Observable<void> {
     return new Observable(subscriber => {
-      this.http.put(environment.API_BASE_URL + `/expenses/${id}`, expense).subscribe(() => {
+      this.http.put(environment.API_BASE_URL + `/expenses/${id}`, {
+        ...expense,
+        amount: expense.isIncome ? Math.abs(expense.amount) : -Math.abs(expense.amount)
+      }).subscribe(() => {
         this.editExpenseLocal(id, expense);
         subscriber.next();
         subscriber.complete();
@@ -154,9 +162,10 @@ export class BackendService {
         return {
           id: expense.id,
           name: expense.name,
-          amount: expense.amount,
+          amount: Math.abs(expense.amount),
           category: expense.category,
-          date: new Date(expense.date)
+          date: new Date(expense.date),
+          isIncome: expense.amount < 0
         };
       });
       this.expensesForMonth.next({ ...this.expensesForMonth.getValue(), [key]: expenses });

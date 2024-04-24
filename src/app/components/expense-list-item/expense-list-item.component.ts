@@ -49,7 +49,8 @@ export class ExpenseListItemComponent implements AfterViewInit {
       name: this.expense.name,
       amount: this.expense.amount,
       category: this.expense.category,
-      date: new Date()
+      date: new Date(),
+      isIncome: this.expense.isIncome
     }));
   }
 
@@ -205,7 +206,7 @@ export class ExpenseListItemComponent implements AfterViewInit {
 
   async editExpense(): Promise<void> {
     this.expenseModalService.toggleModal(true);
-    this.expenseModalService.updateModalData(this.expense.amount, this.expense.name, this.expense.category, this.expense.id);
+    this.expenseModalService.updateModalData(this.expense.amount, this.expense.name, this.expense.category, this.expense.id, this.expense.isIncome);
     this.expenseModalService.setModalMode('edit');
   }
 

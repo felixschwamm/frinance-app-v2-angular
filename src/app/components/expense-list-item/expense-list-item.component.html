@@ -21,7 +21,7 @@
             </div>
             <div class="flex-grow-1"></div>
             <div class="flex-shrink-0">
-                <span class="px-3">{{utilsService.formatCurrency(expense.amount)}} €</span>
+                <span class="px-3" [class.green]="expense.isIncome">{{utilsService.formatCurrency(expense.amount)}} €</span>
             </div>
         </div>
     </div>

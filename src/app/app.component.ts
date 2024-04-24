@@ -55,21 +55,4 @@ export class AppComponent implements OnInit {
     this.backendService.updateBudget();
     this.backendService.updateOverviewForYear(currentYear);
   }
-
-  testExpenses: Expense[] = [
-    {
-      id: '1',
-      name: 'Miete',
-      amount: 600,
-      category: ExpenseCategory.WOHNEN,
-      date: new Date('2021-01-01')
-    },
-    {
-      id: '2',
-      name: 'Essen',
-      amount: 200,
-      category: ExpenseCategory.ESSEN,
-      date: new Date('2021-01-02')
-    }
-  ];
 }
