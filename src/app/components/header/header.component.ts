@@ -37,7 +37,7 @@ export class HeaderComponent implements OnInit {
       if (expenses === null) {
         return null;
       }
-      return expenses.reduce((acc, expense) => acc + expense.amount, 0);
+      return expenses.reduce((acc, expense) => expense.isIncome ? acc - expense.amount : acc + expense.amount, 0);
     })
   );
 

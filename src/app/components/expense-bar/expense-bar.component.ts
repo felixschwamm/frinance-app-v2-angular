@@ -32,11 +32,10 @@ export class ExpenseBarComponent implements OnInit {
       }
 
       const expenses = Object.values(expensesForCurrentMonth).flat();
-      const totalAmount = expenses.reduce((acc, expense) => acc + expense.amount, 0);
-
+      const totalAmount = expenses.reduce((acc, expense) => expense.isIncome ? acc - expense.amount : acc + expense.amount, 0);
       return Object.keys(ExpenseCategory).filter(key => isNaN(Number(key))).reduce((acc, category) => {
         const categoryExpenses = expenses.filter(expense => expense.category === category);
-        const categoryAmount = categoryExpenses.reduce((acc, expense) => acc + expense.amount, 0);
+        const categoryAmount = categoryExpenses.reduce((acc, expense) => expense.isIncome ? acc - expense.amount : acc + expense.amount, 0);
         const categoryWidth = totalAmount > budget ? (categoryAmount / totalAmount) * 100 : (categoryAmount / budget) * 100;
         return {
           ...acc,
@@ -59,7 +58,7 @@ export class ExpenseBarComponent implements OnInit {
   totalExpenseAmountForCurrentMonth$ = this.backendService.expensesForCurrentMonth$.pipe(
     filter(expenses => expenses !== null),
     map(expenses => {
-      return expenses!.reduce((acc, expense) => acc + expense.amount, 0);
+      return expenses!.reduce((acc, expense) => expense.isIncome ? acc - expense.amount : acc + expense.amount, 0);
     })
   );
 

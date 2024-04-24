@@ -8,7 +8,7 @@
                     <span>Betrag</span>
                     <app-currency-input [(value)]="amountInputValue"></app-currency-input>
                 </div>
-                <div style="position: absolute; left: 50%; transform: translateX(-50%);">
+                <div class="w-100" style="position: absolute; left: 50%; transform: translateX(-50%);">
                     <app-select (selectedChange)="handleAmountTypeChange($event)" [items]="['Ausgabe', 'Einnahme']"></app-select>
                 </div>
             </div>
