@@ -78,8 +78,11 @@ export class ExpenseListComponent implements OnInit {
   );
 
   handleCollapseList(): void {
-    window.scrollTo(0, 0);
     this.maxNumberOfExpenses$.next(5);
+    // wait for the list to collapse and then scroll to the top
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 300);
   }
 
   handleLoadMore(): void {
