@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { YearPickerComponent } from "../year-picker/year-picker.component";
-import { BehaviorSubject, Observable, combineLatest, debounceTime, map, skip } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, debounceTime, map, skip, lastValueFrom } from 'rxjs';
 import { BackendService } from '../../services/backend.service';
 import { CommonModule } from '@angular/common';
 import { ExpenseCategory } from '../../types';
@@ -22,6 +22,8 @@ export class OverviewComponent implements OnInit {
 
   currentYear = new Date().getFullYear();
   currentMonth = new Date().getMonth();
+
+  MAX_EXPENSE_HEIGHT = 160;
 
   selectedMonth$: BehaviorSubject<number> = new BehaviorSubject<number>(new Date().getMonth());
   selectedMonthString$ = this.selectedMonth$.pipe(map(month => this.utilsService.getMonthName(month)));
@@ -61,13 +63,13 @@ export class OverviewComponent implements OnInit {
       }
       return expenses.map(monthExpenses => {
         return {
-          [ExpenseCategory.WOHNEN]: monthExpenses[ExpenseCategory.WOHNEN] / maxExpenseSumOfYear * 100,
-          [ExpenseCategory.ESSEN]: monthExpenses[ExpenseCategory.ESSEN] / maxExpenseSumOfYear * 100,
-          [ExpenseCategory.GESUNDHEIT]: monthExpenses[ExpenseCategory.GESUNDHEIT] / maxExpenseSumOfYear * 100,
-          [ExpenseCategory.KLEIDUNG]: monthExpenses[ExpenseCategory.KLEIDUNG] / maxExpenseSumOfYear * 100,
-          [ExpenseCategory.TRANSPORT]: monthExpenses[ExpenseCategory.TRANSPORT] / maxExpenseSumOfYear * 100,
-          [ExpenseCategory.FREIZEIT]: monthExpenses[ExpenseCategory.FREIZEIT] / maxExpenseSumOfYear * 100,
-          [ExpenseCategory.SONSTIGES]: monthExpenses[ExpenseCategory.SONSTIGES] / maxExpenseSumOfYear * 100
+          [ExpenseCategory.WOHNEN]: monthExpenses[ExpenseCategory.WOHNEN] / maxExpenseSumOfYear * this.MAX_EXPENSE_HEIGHT,
+          [ExpenseCategory.ESSEN]: monthExpenses[ExpenseCategory.ESSEN] / maxExpenseSumOfYear * this.MAX_EXPENSE_HEIGHT,
+          [ExpenseCategory.GESUNDHEIT]: monthExpenses[ExpenseCategory.GESUNDHEIT] / maxExpenseSumOfYear * this.MAX_EXPENSE_HEIGHT,
+          [ExpenseCategory.KLEIDUNG]: monthExpenses[ExpenseCategory.KLEIDUNG] / maxExpenseSumOfYear * this.MAX_EXPENSE_HEIGHT,
+          [ExpenseCategory.TRANSPORT]: monthExpenses[ExpenseCategory.TRANSPORT] / maxExpenseSumOfYear * this.MAX_EXPENSE_HEIGHT,
+          [ExpenseCategory.FREIZEIT]: monthExpenses[ExpenseCategory.FREIZEIT] / maxExpenseSumOfYear * this.MAX_EXPENSE_HEIGHT,
+          [ExpenseCategory.SONSTIGES]: monthExpenses[ExpenseCategory.SONSTIGES] / maxExpenseSumOfYear * this.MAX_EXPENSE_HEIGHT
         }
       });
     })
@@ -101,6 +103,7 @@ export class OverviewComponent implements OnInit {
       }
     })
   );
+  selectedMonthTotalExpense$ = this.selectedMonthExpenses$.pipe(map(expenses => Object.values(expenses).reduce((a, b) => a + b, 0)));
   selectedMonthMaxExpense$ = this.selectedMonthExpenses$.pipe(map(expenses => Math.max(...Object.values(expenses))));
   expensesForSelectedMonth: { [category: string]: number } = {
     [ExpenseCategory.WOHNEN]: 0,
@@ -118,8 +121,11 @@ export class OverviewComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.selectedYearDebounced$.pipe(skip(1)).subscribe(selectedYear => {
-      this.backendService.updateOverviewForYear(selectedYear);
+    this.backendService.expensesForMonth$.subscribe(async (expensesForMonth) => {
+      await lastValueFrom(this.backendService.updateOverviewForYear(this.currentYear));
+    });
+    this.selectedYearDebounced$.subscribe(async selectedYear => {
+      await lastValueFrom(this.backendService.updateOverviewForYear(selectedYear));
     });
     this.selectedMonthExpenses$.subscribe(expenses => {
       this.expensesForSelectedMonth = expenses;

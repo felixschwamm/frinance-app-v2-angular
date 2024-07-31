@@ -36,6 +36,7 @@ export class BackendService {
   ) { }
 
   private fetchOverviewForYear(year: number): Observable<{ [category: string]: number }[]> {
+    console.log('fetching overview for year', year);
     return this.http.get(environment.API_BASE_URL + `/overview?year=${year}`) as Observable<{ [category: string]: number }[]>;
   }
 
@@ -91,8 +92,10 @@ export class BackendService {
   public editExpense(id: string, expense: { name: string, amount: number, category: ExpenseCategory, date: Date, isIncome: boolean }): Observable<void> {
     return new Observable(subscriber => {
       this.http.put(environment.API_BASE_URL + `/expenses/${id}`, {
-        ...expense,
-        amount: expense.isIncome ? Math.abs(expense.amount) : -Math.abs(expense.amount)
+        name: expense.name,
+        category: expense.category,
+        date: expense.date,
+        amount: expense.isIncome ? -Math.abs(expense.amount) : Math.abs(expense.amount)
       }).subscribe(() => {
         this.editExpenseLocal(id, expense);
         subscriber.next();

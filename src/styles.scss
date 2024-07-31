@@ -1,5 +1,5 @@
 .border-light {
-    border-color: #ddd !important;
+    border-color: #333 !important;
 }
 
 .border-dark {
@@ -15,16 +15,16 @@
 }
 
 .btn-tab{
-   background-color: hsla(216, 100, 40, 0.1)!important;
+   background-color: hsla(216, 100%, 40%, 0.1)!important;
    color: rgb(92, 154, 248)!important; 
 }
 
 .border-tab{
-    border-color: hsla(217, 90, 11, 100%)!important;
+    border-color: hsla(217, 90%, 11%, 100%)!important;
 }
 
 .btn-fab {
-    background-color: hsla(216, 100, 40, 100%)!important;
+    background-color: hsla(216, 100%, 40%, 100%)!important;
     color: #D9D9D9!important;
 }
 
