@@ -23,12 +23,14 @@ export class ExpenseListComponent implements OnInit {
   ) {}
 
   selectedSorting$ = new BehaviorSubject<number>(0);
+  maxNumberOfExpenses$ = new BehaviorSubject<number>(5);
   selectedMonthDebounced$ = this.expenseListService.selectedMonth$.pipe(
     debounceTime(300)
   );
 
   ngOnInit(): void {
       this.selectedMonthDebounced$.pipe(skip(1)).subscribe(selectedMonth => {
+        this.maxNumberOfExpenses$.next(5);
         this.backendService.updateExpensesForMonth(selectedMonth.year, selectedMonth.month);
       });
   }
@@ -52,6 +54,36 @@ export class ExpenseListComponent implements OnInit {
       }
     })
   );
+
+  expensesLimited$: Observable<null | Expense[]> = combineLatest([this.expenses$, this.maxNumberOfExpenses$]).pipe(
+    map(([expenses, maxNumberOfExpenses]) => {
+      if (expenses === null) {
+        return null;
+      }
+      return expenses.slice(0, maxNumberOfExpenses);
+    })
+  );
+
+  canDisplayMore$: Observable<boolean> = combineLatest([this.expenses$, this.maxNumberOfExpenses$]).pipe(
+    map(([expenses, maxNumberOfExpenses]) => {
+      if (expenses === null) {
+        return false;
+      }
+      return expenses.length > maxNumberOfExpenses;
+    })
+  );
+
+  displayButton$: Observable<boolean> = this.expenses$.pipe(
+    map(expenses => expenses !== null && expenses.length > 5)
+  );
+
+  handleCollapseList(): void {
+    this.maxNumberOfExpenses$.next(5);
+  }
+
+  handleLoadMore(): void {
+    this.maxNumberOfExpenses$.next(this.maxNumberOfExpenses$.value + 5);
+  }
 
   handleSelectedSortingChange(selectedSorting: number): void {
     this.selectedSorting$.next(selectedSorting);
