@@ -6,6 +6,7 @@ import { BackendService } from '../../services/backend.service';
 import { SelectComponent } from "../select/select.component";
 import { BehaviorSubject, Observable, Subject, combineLatest, debounceTime, map, of, skip } from 'rxjs';
 import { MonthSelectComponent } from "../month-select/month-select.component";
+import { ExpenseListService } from '../../services/expense-list.service';
 
 @Component({
     selector: 'app-expense-list',
@@ -17,12 +18,12 @@ import { MonthSelectComponent } from "../month-select/month-select.component";
 export class ExpenseListComponent implements OnInit {
 
   constructor(
-    private backendService: BackendService
+    private backendService: BackendService,
+    public expenseListService: ExpenseListService
   ) {}
 
   selectedSorting$ = new BehaviorSubject<number>(0);
-  selectedMonth$: BehaviorSubject<{ year: number, month: number }> = new BehaviorSubject({ year: new Date().getFullYear(), month: new Date().getMonth() + 1 });
-  selectedMonthDebounced$ = this.selectedMonth$.pipe(
+  selectedMonthDebounced$ = this.expenseListService.selectedMonth$.pipe(
     debounceTime(300)
   );
 
@@ -33,7 +34,7 @@ export class ExpenseListComponent implements OnInit {
   }
 
   onSelectedMonthChange(selectedMonth: { year: number, month: number }): void {
-    this.selectedMonth$.next(selectedMonth);
+    this.expenseListService.selectedMonth$.next(selectedMonth);
   }
 
   expenses$: Observable<null | Expense[]> = combineLatest([this.backendService.expensesForMonth$, this.selectedSorting$, this.selectedMonthDebounced$]).pipe(

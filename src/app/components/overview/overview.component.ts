@@ -5,6 +5,7 @@ import { BackendService } from '../../services/backend.service';
 import { CommonModule } from '@angular/common';
 import { ExpenseCategory } from '../../types';
 import { UtilsService } from '../../services/utils.service';
+import { ExpenseListService } from '../../services/expense-list.service';
 
 @Component({
   selector: 'app-overview',
@@ -17,7 +18,8 @@ export class OverviewComponent implements OnInit {
 
   constructor(
     private backendService: BackendService,
-    public utilsService: UtilsService
+    public utilsService: UtilsService,
+    private expenseListService: ExpenseListService
   ) { }
 
   currentYear = new Date().getFullYear();
@@ -118,6 +120,12 @@ export class OverviewComponent implements OnInit {
 
   handleSelectedYearChange(year: number): void {
     this.selectedYear$.next(year);
+  }
+
+  handleTransferMonthClick(): void {
+    const month = this.selectedMonth$.value + 1;
+    const year = this.selectedYear$.value;
+    this.expenseListService.changeSelectedMonth({ year, month });
   }
 
   ngOnInit(): void {
