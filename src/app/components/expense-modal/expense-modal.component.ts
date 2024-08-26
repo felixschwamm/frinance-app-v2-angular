@@ -8,19 +8,23 @@ import { BackendService } from '../../services/backend.service';
 import { ExpenseModalService } from '../../services/expense-modal.service';
 import { lastValueFrom } from 'rxjs';
 import { SelectComponent } from "../select/select.component";
+import { CategorySelectNewComponent } from "../category-select-new/category-select-new.component";
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-expense-modal',
     standalone: true,
     templateUrl: './expense-modal.component.html',
     styleUrl: './expense-modal.component.scss',
-    imports: [CommonModule, CategorySelectComponent, CurrencyInputComponent, FormsModule, SelectComponent]
+    imports: [CommonModule, CategorySelectComponent, CurrencyInputComponent, FormsModule, SelectComponent, CategorySelectNewComponent]
 })
 export class ExpenseModalComponent implements OnInit {
 
   constructor(
     private backendService: BackendService,
-    public expenseModalService: ExpenseModalService
+    public expenseModalService: ExpenseModalService,
+    private http: HttpClient
   ) { }
 
   selectedPage: number = 0;
@@ -31,6 +35,7 @@ export class ExpenseModalComponent implements OnInit {
   mode: "add" | "edit" = "add";
   id = "";
   isIncome = false;
+  isLoadingCategory = true;
 
   ngOnInit(): void {
     this.expenseModalService.modalData$.subscribe((modalData) => {
@@ -50,6 +55,20 @@ export class ExpenseModalComponent implements OnInit {
     this.expenseModalService.updateModalData(0, "", ExpenseCategory.SONSTIGES, undefined, false);
     this.expenseModalService.setModalMode("add");
     this.selectedPage = 0;
+  }
+
+  handleCategoryDeselect() {
+    this.catecoryValue = ExpenseCategory.SONSTIGES;
+    this.selectedPage = 1;
+    this.isLoadingCategory = true;
+  }
+
+  handleCategorySelect() {
+    this.selectedPage = 2;
+    this.http.get(environment.API_BASE_URL + `/category-recommendation?name=${this.nameInputValue}`).subscribe((response: any) => {
+      this.catecoryValue = response;
+      this.isLoadingCategory = false;
+    });
   }
 
   submit(): void {
