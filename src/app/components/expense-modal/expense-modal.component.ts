@@ -65,7 +65,11 @@ export class ExpenseModalComponent implements OnInit {
 
   handleCategorySelect() {
     this.selectedPage = 2;
-    this.http.get(environment.API_BASE_URL + `/category-recommendation?name=${this.nameInputValue}`).subscribe((response: any) => {
+    this.http.post(environment.API_BASE_URL + `/category-recommendation?name=${this.nameInputValue}`,
+      {
+        name: this.nameInputValue
+      }
+    ).subscribe((response: any) => {
       this.catecoryValue = response;
       this.isLoadingCategory = false;
     });
@@ -107,9 +111,8 @@ export class ExpenseModalComponent implements OnInit {
   }
 
   handleNameInput(event: Event): void {
-    // only allow a-z, A-Z, 0-9, space, and hyphen
+    // insert regex here
     const input = event.target as HTMLInputElement;
-    input.value = input.value.replace(/[^a-zA-Z0-9\s-]/g, "");
 
     // limit length to 50
     if (input.value.length > 40) {
